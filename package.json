@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "./.commands/build.sh",
+    "test:integration": "npm run build && npm --workspace integrations run test",
     "test:ut": "./.commands/test-ut.sh",
     "test:ut:watch": "./.commands/test-ut.sh --watch",
     "test:ut:update": "./.commands/test-ut.sh --update",
@@ -30,10 +31,20 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "types": "./dist/index.d.ts"
+    },
+    "./toTypescript": {
+      "import": "./dist/toTypescript/index.mjs",
+      "require": "./dist/toTypescript/index.cjs",
+      "types": "./dist/toTypescript/index.d.ts"
+    },
+    "./typescript": {
+      "import": "./dist/typescript/index.mjs",
+      "require": "./dist/typescript/index.cjs",
+      "types": "./dist/typescript/index.d.ts"
     }
   },
   "peerDependencies": {
-    "@duplojs/lang": ">=0.0.0 <1.0.0"
+    "@duplojs/lang": "0.0.1-beta.1"
   },
   "dependencies": {
     "@typescript/typescript6": "6.0.2"

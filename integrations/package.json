@@ -1,6 +1,11 @@
 {
-  "name": "integrations",
-  "dependencies": {
-    "@duplojs/lang": "file:.."
-  }
+	"name": "integrations",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "vitest run --root .. integrations/toTypescript.test.ts"
+	},
+	"dependencies": {
+		"@duplojs/lang-tools": "file:.."
+	}
 }

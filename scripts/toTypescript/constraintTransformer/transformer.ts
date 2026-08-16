@@ -1,0 +1,43 @@
+import type * as DDataStructure from "@duplojs/lang/dataStructure";
+import * as DEither from "@duplojs/lang/either";
+import type { Typescript } from "@scripts/typescript";
+import { createAddImport, type MapImportContext } from "../importContext";
+import type { ConstraintTransformer, ConstraintTransformerParams, MaybeConstraintTransformerEither } from "./create";
+
+export interface ConstraintTransformerFunctionParams {
+	readonly transformers: readonly ConstraintTransformer[];
+	readonly structure: DDataStructure.Structure;
+	readonly structureTypeNode: Typescript.TypeNode;
+	readonly importContext: MapImportContext;
+}
+
+export function constraintTransformer(
+	constraint: DDataStructure.Constraint,
+	params: ConstraintTransformerFunctionParams,
+): MaybeConstraintTransformerEither {
+	const transformerParams: ConstraintTransformerParams = {
+		structure: params.structure,
+		structureTypeNode: params.structureTypeNode,
+		importContext: params.importContext,
+		success: (typeNode) => DEither.right("buildSuccess", typeNode),
+		buildError: () => DEither.left("buildConstraintError", constraint),
+		addImport: createAddImport(params.importContext),
+	};
+
+	for (const currentTransformer of params.transformers) {
+		const result = currentTransformer(
+			constraint,
+			transformerParams,
+		);
+
+		if (!DEither.isLeft(result)) {
+			return result;
+		}
+
+		if (DEither.hasInformation(result, "buildConstraintError")) {
+			return result;
+		}
+	}
+
+	return DEither.left("constraintNotSupport", constraint);
+}

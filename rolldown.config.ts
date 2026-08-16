@@ -3,6 +3,10 @@ import dts from "unplugin-dts/rolldown";
 
 export default defineConfig({
 	input: "scripts/index.ts",
+	external: [
+		/^@duplojs\/lang(?:\/.*)?$/,
+		"@typescript/typescript6",
+	],
 	platform: "browser",
 	tsconfig: "tsconfig.build.json",
 	output: [
