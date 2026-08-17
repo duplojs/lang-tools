@@ -1,18 +1,10 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import { Typescript } from "@scripts/typescript";
-import { createTypeTransformer } from "../create";
-
-type NumberLiteralStructure = DDataStructure.TypeStructure<number> & {
-	readonly definition: DDataStructure.TypeStructure["definition"] & {
-		readonly type: DDataStructure.NumberLiteralType;
-	};
-};
+import { createTypeTransformer, typeStructureIdentifier } from "../create";
 
 export const numberLiteralTypeTransformer = createTypeTransformer(
-	(
+	(structure) => typeStructureIdentifier(
 		structure,
-	): structure is NumberLiteralStructure => DDataStructure.typeIdentifier(
-		structure.definition.type,
 		DDataStructure.numberLiteralTypeKind,
 	),
 	(

@@ -1,3 +1,4 @@
+import * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import * as DModeling from "@duplojs/lang/modeling";
 import { Typescript } from "@scripts/typescript";
@@ -20,8 +21,9 @@ function createConstraintsTypeNode(
 export const newTypeStructureTransformer = createStructureTransformer(
 	(
 		structure,
-	): structure is DModeling.NewTypeStructure => DModeling.newTypeStructureKind.has(
+	) => DDataStructure.structureIdentifier(
 		structure,
+		DModeling.newTypeStructureKind,
 	),
 	(
 		structure,

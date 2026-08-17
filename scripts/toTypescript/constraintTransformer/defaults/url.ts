@@ -1,10 +1,28 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
-import { createDefaultConstraintTransformer } from "./createDefaultConstraintTransformer";
+import { Typescript } from "@scripts/typescript";
+import { createConstraintTransformer } from "../create";
 
-export const urlConstraintTransformer = createDefaultConstraintTransformer(
-	DDataStructure.urlConstraintKind,
-	{
-		domain: "string",
-		references: [{ typeName: "Url" }],
+export const urlConstraintTransformer = createConstraintTransformer(
+	(constraint) => DDataStructure.constraintIdentifier(
+		constraint,
+		DDataStructure.urlConstraintKind,
+	),
+	(
+		_constraint,
+		{
+			success,
+			addImport,
+		},
+	) => {
+		addImport("@duplojs/lang/string", "DString", "namespace");
+
+		return success(
+			Typescript.factory.createTypeReferenceNode(
+				Typescript.factory.createQualifiedName(
+					Typescript.factory.createIdentifier("DString"),
+					Typescript.factory.createIdentifier("Url"),
+				),
+			),
+		);
 	},
 );

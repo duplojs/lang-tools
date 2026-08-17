@@ -4,7 +4,7 @@ import { createStructureTransformer } from "../create";
 export const lazyStructureTransformer = createStructureTransformer(
 	(
 		structure,
-	): structure is DDataStructure.LazyStructure => DDataStructure.structureIdentifier(
+	) => DDataStructure.structureIdentifier(
 		structure,
 		DDataStructure.lazyStructureKind,
 	),

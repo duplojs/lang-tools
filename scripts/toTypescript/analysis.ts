@@ -26,27 +26,34 @@ export interface CreateStructureAnalysisParams {
 	readonly importContext: MapImportContext;
 }
 
-function isNewTypeStructure(
-	structure: DDataStructure.Structure,
-): structure is DModeling.NewTypeStructure {
-	return DModeling.newTypeStructureKind.has(structure);
-}
-
-function isEntityStructure(
-	structure: DDataStructure.Structure,
-): structure is DModeling.EntityStructure {
-	return DModeling.entityStructureKind.has(structure);
-}
-
 function getChildren(
 	structure: DDataStructure.Structure,
 ): readonly DDataStructure.Structure[] {
-	if (isNewTypeStructure(structure)) {
+	if (
+		DDataStructure.structureIdentifier(
+			structure,
+			DModeling.newTypeStructureKind,
+		)
+	) {
 		return [structure.definition.inner];
 	}
 
-	if (isEntityStructure(structure)) {
+	if (
+		DDataStructure.structureIdentifier(
+			structure,
+			DModeling.entityStructureKind,
+		)
+	) {
 		return [structure.definition.inner.value];
+	}
+
+	if (
+		DDataStructure.structureIdentifier(
+			structure,
+			DModeling.taggedObjectStructureKind,
+		)
+	) {
+		return [structure.definition.inner];
 	}
 
 	if (
@@ -210,14 +217,24 @@ export function createStructureAnalysis(
 	const reserveStructureIdentifier = (
 		currentStructure: DDataStructure.Structure,
 	): void => {
+		const requestedIdentifier = currentStructure.definition.identifier
+			?? (
+				DDataStructure.structureIdentifier(
+					currentStructure,
+					DModeling.taggedObjectStructureKind,
+				)
+					? currentStructure.name
+					: undefined
+			);
+
 		if (
 			structureIdentifiers.has(currentStructure)
-			|| currentStructure.definition.identifier === undefined
+			|| requestedIdentifier === undefined
 		) {
 			return;
 		}
 
-		const identifier = createIdentifier(currentStructure.definition.identifier);
+		const identifier = createIdentifier(requestedIdentifier);
 
 		structureIdentifiers.set(
 			currentStructure,

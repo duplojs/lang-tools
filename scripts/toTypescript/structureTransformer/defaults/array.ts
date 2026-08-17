@@ -6,7 +6,7 @@ import { createStructureTransformer } from "../create";
 export const arrayStructureTransformer = createStructureTransformer(
 	(
 		structure,
-	): structure is DDataStructure.ArrayStructure => DDataStructure.structureIdentifier(
+	) => DDataStructure.structureIdentifier(
 		structure,
 		DDataStructure.arrayStructureKind,
 	),

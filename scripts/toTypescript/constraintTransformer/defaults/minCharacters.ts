@@ -1,15 +1,38 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
-import { createDefaultConstraintTransformer } from "./createDefaultConstraintTransformer";
+import { Typescript } from "@scripts/typescript";
+import { createConstraintTransformer } from "../create";
 
-export const minCharactersConstraintTransformer = createDefaultConstraintTransformer(
-	DDataStructure.stringMinConstraintKind,
-	{
-		domain: "string",
-		references: [
-			{
-				typeName: "MinCharacters",
-				definitionKey: "min",
-			},
-		],
+export const minCharactersConstraintTransformer = createConstraintTransformer(
+	(constraint) => DDataStructure.constraintIdentifier(
+		constraint,
+		DDataStructure.stringMinConstraintKind,
+	),
+	(constraint, { success, buildError, addImport }) => {
+		const min = constraint.definition.min;
+
+		if (!Number.isFinite(min)) {
+			return buildError();
+		}
+
+		addImport("@duplojs/lang/string", "DString", "namespace");
+
+		return success(
+			Typescript.factory.createTypeReferenceNode(
+				Typescript.factory.createQualifiedName(
+					Typescript.factory.createIdentifier("DString"),
+					Typescript.factory.createIdentifier("MinCharacters"),
+				),
+				[
+					Typescript.factory.createLiteralTypeNode(
+						min < 0
+							? Typescript.factory.createPrefixUnaryExpression(
+								Typescript.SyntaxKind.MinusToken,
+								Typescript.factory.createNumericLiteral(-min),
+							)
+							: Typescript.factory.createNumericLiteral(min),
+					),
+				],
+			),
+		);
 	},
 );

@@ -6,6 +6,7 @@ import { newTypeStructureTransformer } from "./newType";
 import { nonEncodableStringStructureTransformer } from "./nonEncodableString";
 import { objectStructureTransformer } from "./object";
 import { recordStructureTransformer } from "./record";
+import { taggedObjectStructureTransformer } from "./taggedObject";
 import { unionStructureTransformer } from "./union";
 
 export * from "./array";
@@ -15,6 +16,7 @@ export * from "./newType";
 export * from "./nonEncodableString";
 export * from "./object";
 export * from "./record";
+export * from "./taggedObject";
 export * from "./union";
 
 export const defaultStructureTransformers = [
@@ -25,5 +27,6 @@ export const defaultStructureTransformers = [
 	nonEncodableStringStructureTransformer,
 	objectStructureTransformer,
 	recordStructureTransformer,
+	taggedObjectStructureTransformer,
 	unionStructureTransformer,
 ] as const satisfies readonly StructureTransformer[];

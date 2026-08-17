@@ -1,18 +1,10 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import { Typescript } from "@scripts/typescript";
-import { createTypeTransformer } from "../create";
-
-type BooleanLiteralStructure = DDataStructure.TypeStructure<boolean> & {
-	readonly definition: DDataStructure.TypeStructure["definition"] & {
-		readonly type: DDataStructure.BooleanLiteralType;
-	};
-};
+import { createTypeTransformer, typeStructureIdentifier } from "../create";
 
 export const booleanLiteralTypeTransformer = createTypeTransformer(
-	(
+	(structure) => typeStructureIdentifier(
 		structure,
-	): structure is BooleanLiteralStructure => DDataStructure.typeIdentifier(
-		structure.definition.type,
 		DDataStructure.booleanLiteralTypeKind,
 	),
 	(

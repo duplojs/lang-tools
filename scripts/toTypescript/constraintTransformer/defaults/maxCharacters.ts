@@ -1,15 +1,38 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
-import { createDefaultConstraintTransformer } from "./createDefaultConstraintTransformer";
+import { Typescript } from "@scripts/typescript";
+import { createConstraintTransformer } from "../create";
 
-export const maxCharactersConstraintTransformer = createDefaultConstraintTransformer(
-	DDataStructure.maxCharactersConstraintKind,
-	{
-		domain: "string",
-		references: [
-			{
-				typeName: "MaxCharacters",
-				definitionKey: "max",
-			},
-		],
+export const maxCharactersConstraintTransformer = createConstraintTransformer(
+	(constraint) => DDataStructure.constraintIdentifier(
+		constraint,
+		DDataStructure.maxCharactersConstraintKind,
+	),
+	(constraint, { success, buildError, addImport }) => {
+		const max = constraint.definition.max;
+
+		if (!Number.isFinite(max)) {
+			return buildError();
+		}
+
+		addImport("@duplojs/lang/string", "DString", "namespace");
+
+		return success(
+			Typescript.factory.createTypeReferenceNode(
+				Typescript.factory.createQualifiedName(
+					Typescript.factory.createIdentifier("DString"),
+					Typescript.factory.createIdentifier("MaxCharacters"),
+				),
+				[
+					Typescript.factory.createLiteralTypeNode(
+						max < 0
+							? Typescript.factory.createPrefixUnaryExpression(
+								Typescript.SyntaxKind.MinusToken,
+								Typescript.factory.createNumericLiteral(-max),
+							)
+							: Typescript.factory.createNumericLiteral(max),
+					),
+				],
+			),
+		);
 	},
 );

@@ -1,10 +1,22 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
-import { createDefaultConstraintTransformer } from "./createDefaultConstraintTransformer";
+import { Typescript } from "@scripts/typescript";
+import { createConstraintTransformer } from "../create";
 
-export const strictNegativeConstraintTransformer = createDefaultConstraintTransformer(
-	DDataStructure.strictNegativeConstraintKind,
-	{
-		domain: "number",
-		references: [{ typeName: "StrictNegative" }],
+export const strictNegativeConstraintTransformer = createConstraintTransformer(
+	(constraint) => DDataStructure.constraintIdentifier(
+		constraint,
+		DDataStructure.strictNegativeConstraintKind,
+	),
+	(_constraint, { success, addImport }) => {
+		addImport("@duplojs/lang/number", "DNumber", "namespace");
+
+		return success(
+			Typescript.factory.createTypeReferenceNode(
+				Typescript.factory.createQualifiedName(
+					Typescript.factory.createIdentifier("DNumber"),
+					Typescript.factory.createIdentifier("StrictNegative"),
+				),
+			),
+		);
 	},
 );

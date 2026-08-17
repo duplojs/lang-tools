@@ -1,10 +1,22 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
-import { createDefaultConstraintTransformer } from "./createDefaultConstraintTransformer";
+import { Typescript } from "@scripts/typescript";
+import { createConstraintTransformer } from "../create";
 
-export const notEmptyConstraintTransformer = createDefaultConstraintTransformer(
-	DDataStructure.notEmptyConstraintKind,
-	{
-		domain: "string",
-		references: [{ typeName: "NotEmpty" }],
+export const notEmptyConstraintTransformer = createConstraintTransformer(
+	(constraint) => DDataStructure.constraintIdentifier(
+		constraint,
+		DDataStructure.notEmptyConstraintKind,
+	),
+	(_constraint, { success, addImport }) => {
+		addImport("@duplojs/lang/string", "DString", "namespace");
+
+		return success(
+			Typescript.factory.createTypeReferenceNode(
+				Typescript.factory.createQualifiedName(
+					Typescript.factory.createIdentifier("DString"),
+					Typescript.factory.createIdentifier("NotEmpty"),
+				),
+			),
+		);
 	},
 );

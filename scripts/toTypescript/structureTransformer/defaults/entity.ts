@@ -7,8 +7,9 @@ import { createStructureTransformer } from "../create";
 export const entityStructureTransformer = createStructureTransformer(
 	(
 		structure,
-	): structure is DModeling.EntityStructure => DModeling.entityStructureKind.has(
+	) => DDataStructure.structureIdentifier(
 		structure,
+		DModeling.entityStructureKind,
 	),
 	(
 		structure,

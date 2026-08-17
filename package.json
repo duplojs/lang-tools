@@ -44,7 +44,7 @@
     }
   },
   "peerDependencies": {
-    "@duplojs/lang": "0.0.1-beta.1"
+    "@duplojs/lang": "0.0.1-beta.2"
   },
   "dependencies": {
     "@typescript/typescript6": "6.0.2"

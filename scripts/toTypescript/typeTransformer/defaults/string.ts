@@ -1,12 +1,10 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import { Typescript } from "@scripts/typescript";
-import { createTypeTransformer } from "../create";
+import { createTypeTransformer, typeStructureIdentifier } from "../create";
 
 export const stringTypeTransformer = createTypeTransformer(
-	(
+	(structure) => typeStructureIdentifier(
 		structure,
-	): structure is DDataStructure.TypeStructure<string> => DDataStructure.typeIdentifier(
-		structure.definition.type,
 		DDataStructure.stringTypeKind,
 	),
 	(

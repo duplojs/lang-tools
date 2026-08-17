@@ -8,7 +8,7 @@ const identifierRegex = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 export const objectStructureTransformer = createStructureTransformer(
 	(
 		structure,
-	): structure is DDataStructure.ObjectStructure => DDataStructure.structureIdentifier(
+	) => DDataStructure.structureIdentifier(
 		structure,
 		DDataStructure.objectStructureKind,
 	),

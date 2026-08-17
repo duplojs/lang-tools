@@ -1,19 +1,59 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
-import { createDefaultConstraintTransformer } from "./createDefaultConstraintTransformer";
+import { Typescript } from "@scripts/typescript";
+import { createConstraintTransformer } from "../create";
 
-export const betweenThanOrEqualConstraintTransformer = createDefaultConstraintTransformer(
-	DDataStructure.betweenThanOrEqualConstraintKind,
-	{
-		domain: "number",
-		references: [
-			{
-				typeName: "GreaterThanOrEqual",
-				definitionKey: "greater",
-			},
-			{
-				typeName: "LessThanOrEqual",
-				definitionKey: "less",
-			},
-		],
+export const betweenThanOrEqualConstraintTransformer = createConstraintTransformer(
+	(constraint) => DDataStructure.constraintIdentifier(
+		constraint,
+		DDataStructure.betweenThanOrEqualConstraintKind,
+	),
+	(constraint, { success, buildError, addImport }) => {
+		const { greater, less } = constraint.definition;
+
+		if (
+			!Number.isFinite(greater)
+			|| !Number.isFinite(less)
+		) {
+			return buildError();
+		}
+
+		addImport("@duplojs/lang/number", "DNumber", "namespace");
+
+		return success(
+			Typescript.factory.createIntersectionTypeNode([
+				Typescript.factory.createTypeReferenceNode(
+					Typescript.factory.createQualifiedName(
+						Typescript.factory.createIdentifier("DNumber"),
+						Typescript.factory.createIdentifier("GreaterThanOrEqual"),
+					),
+					[
+						Typescript.factory.createLiteralTypeNode(
+							greater < 0
+								? Typescript.factory.createPrefixUnaryExpression(
+									Typescript.SyntaxKind.MinusToken,
+									Typescript.factory.createNumericLiteral(-greater),
+								)
+								: Typescript.factory.createNumericLiteral(greater),
+						),
+					],
+				),
+				Typescript.factory.createTypeReferenceNode(
+					Typescript.factory.createQualifiedName(
+						Typescript.factory.createIdentifier("DNumber"),
+						Typescript.factory.createIdentifier("LessThanOrEqual"),
+					),
+					[
+						Typescript.factory.createLiteralTypeNode(
+							less < 0
+								? Typescript.factory.createPrefixUnaryExpression(
+									Typescript.SyntaxKind.MinusToken,
+									Typescript.factory.createNumericLiteral(-less),
+								)
+								: Typescript.factory.createNumericLiteral(less),
+						),
+					],
+				),
+			]),
+		);
 	},
 );

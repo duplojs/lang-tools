@@ -5,8 +5,9 @@ import { createConstraintTransformer } from "../create";
 export const allowedCharactersConstraintTransformer = createConstraintTransformer(
 	(
 		constraint,
-	): constraint is DDataStructure.AllowedCharactersConstraint => DDataStructure.allowedCharactersConstraintKind.has(
+	) => DDataStructure.constraintIdentifier(
 		constraint,
+		DDataStructure.allowedCharactersConstraintKind,
 	),
 	(
 		constraint,

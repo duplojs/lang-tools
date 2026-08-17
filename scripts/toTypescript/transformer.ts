@@ -182,6 +182,15 @@ export function transformer(
 		}
 
 		if (currentIdentifier) {
+			const contextDeclaration = params.context.get(currentStructure);
+
+			if (
+				contextDeclaration !== undefined
+				&& contextDeclaration !== placeholderDeclaration
+			) {
+				return result;
+			}
+
 			params.context.set(
 				currentStructure,
 				createTypeAliasDeclaration(

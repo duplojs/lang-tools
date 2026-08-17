@@ -67,77 +67,73 @@ export function applyMapImportContextEntries(
 
 DDataStructure.StructureClass.addToPrototype(
 	"setIdentifier",
-	function(
-		this: DDataStructure.Structure,
+	(
+		self,
 		identifier: string,
-	) {
-		this.definition.identifier = identifier;
+	) => {
+		self.definition.identifier = identifier;
 
-		return this;
+		return self;
 	},
 );
 
 DDataStructure.StructureClass.addToPrototype(
 	"addIdentifier",
-	function(
-		this: DDataStructure.Structure,
+	(
+		self,
 		identifier: string,
-	) {
-		return this.clone().setIdentifier(identifier);
-	},
+	) => self.clone().setIdentifier(identifier),
 );
 
 DDataStructure.StructureClass.addToPrototype(
 	"setOverrideTypescriptTransformer",
-	function(
-		this: DDataStructure.Structure,
+	(
+		self,
 		overrideTransformer: TypescriptTransformerOverride | null,
-	) {
+	) => {
 		if (overrideTransformer === null) {
-			this.definition.overrideTypescriptTransformer = undefined;
+			self.definition.overrideTypescriptTransformer = undefined;
 		} else if (typeof overrideTransformer === "function") {
-			this.definition.overrideTypescriptTransformer = overrideTransformer;
+			self.definition.overrideTypescriptTransformer = overrideTransformer;
 		} else {
-			this.definition.overrideTypescriptTransformer = (
+			self.definition.overrideTypescriptTransformer = (
 				_structure,
 				{ success },
 			) => success(overrideTransformer);
 		}
 
-		return this;
+		return self;
 	},
 );
 
 DDataStructure.StructureClass.addToPrototype(
 	"addOverrideTypescriptTransformer",
-	function(
-		this: DDataStructure.Structure,
+	(
+		self,
 		overrideTransformer: TypescriptTransformerOverride | null,
-	) {
-		return this.clone()
-			.setOverrideTypescriptTransformer(overrideTransformer);
-	},
+	) => self
+		.clone()
+		.setOverrideTypescriptTransformer(overrideTransformer),
 );
 
 DDataStructure.StructureClass.addToPrototype(
 	"setMapImportContextEntries",
-	function(
-		this: DDataStructure.Structure,
+	(
+		self,
 		...entries: readonly MapImportContextEntry[]
-	) {
-		this.definition.mapImportContextEntries = entries;
+	) => {
+		self.definition.mapImportContextEntries = entries;
 
-		return this;
+		return self;
 	},
 );
 
 DDataStructure.StructureClass.addToPrototype(
 	"addMapImportContextEntries",
-	function(
-		this: DDataStructure.Structure,
+	(
+		self,
 		...entries: readonly MapImportContextEntry[]
-	) {
-		return this.clone()
-			.setMapImportContextEntries(...entries);
-	},
+	) => self
+		.clone()
+		.setMapImportContextEntries(...entries),
 );

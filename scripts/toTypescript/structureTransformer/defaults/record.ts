@@ -6,7 +6,7 @@ import { createStructureTransformer } from "../create";
 export const recordStructureTransformer = createStructureTransformer(
 	(
 		structure,
-	): structure is DDataStructure.RecordStructure => DDataStructure.structureIdentifier(
+	) => DDataStructure.structureIdentifier(
 		structure,
 		DDataStructure.recordStructureKind,
 	),

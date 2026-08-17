@@ -1,18 +1,10 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import { Typescript } from "@scripts/typescript";
-import { createTypeTransformer } from "../create";
-
-type BigintLiteralStructure = DDataStructure.TypeStructure<bigint> & {
-	readonly definition: DDataStructure.TypeStructure["definition"] & {
-		readonly type: DDataStructure.BigintLiteralType;
-	};
-};
+import { createTypeTransformer, typeStructureIdentifier } from "../create";
 
 export const bigintLiteralTypeTransformer = createTypeTransformer(
-	(
+	(structure) => typeStructureIdentifier(
 		structure,
-	): structure is BigintLiteralStructure => DDataStructure.typeIdentifier(
-		structure.definition.type,
 		DDataStructure.bigintLiteralTypeKind,
 	),
 	(
