@@ -3,11 +3,17 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const arrayLengthEqualConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.arrayLengthEqualConstraintKind,
 	),
-	(constraint, { success, buildError, addImport }) => {
+	(
+		constraint,
+		{
+			success,
+			buildError,
+			addImport,
+		},
+	) => {
 		const length = constraint.definition.length;
 
 		if (!Number.isFinite(length)) {

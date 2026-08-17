@@ -1,0 +1,28 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`newTypeStructureTransformer > propagates an unsupported dedicated constraint 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
+
+exports[`newTypeStructureTransformer > propagates an unsupported inner structure 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
+
+exports[`newTypeStructureTransformer > renders new types with zero, one or several dedicated constraints 1`] = `
+[
+  "import * as DModeling from "@duplojs/lang/modeling";
+
+export type Value = number & DModeling.NewType<"Score", never>;",
+  "import * as DNumber from "@duplojs/lang/number";
+
+import * as DModeling from "@duplojs/lang/modeling";
+
+export type Value = number & DModeling.NewType<"Score", DNumber.Integer>;",
+  "import * as DNumber from "@duplojs/lang/number";
+
+import * as DModeling from "@duplojs/lang/modeling";
+
+export type Value = number & DModeling.NewType<"Score", DNumber.Integer | DNumber.Safe>;",
+  "import * as DNumber from "@duplojs/lang/number";
+
+import * as DModeling from "@duplojs/lang/modeling";
+
+export type Value = number & DNumber.Positive & DModeling.NewType<"Score", never>;",
+]
+`;

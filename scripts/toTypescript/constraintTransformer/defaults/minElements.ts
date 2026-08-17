@@ -3,11 +3,17 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const minElementsConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.minElementsConstraintKind,
 	),
-	(constraint, { success, buildError, addImport }) => {
+	(
+		constraint,
+		{
+			success,
+			buildError,
+			addImport,
+		},
+	) => {
 		const min = constraint.definition.min;
 
 		if (!Number.isFinite(min)) {

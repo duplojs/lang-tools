@@ -3,8 +3,7 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const urlConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.urlConstraintKind,
 	),
 	(

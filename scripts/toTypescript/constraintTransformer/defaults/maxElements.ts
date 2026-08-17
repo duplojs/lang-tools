@@ -3,11 +3,17 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const maxElementsConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.maxElementsConstraintKind,
 	),
-	(constraint, { success, buildError, addImport }) => {
+	(
+		constraint,
+		{
+			success,
+			buildError,
+			addImport,
+		},
+	) => {
 		const max = constraint.definition.max;
 
 		if (!Number.isFinite(max)) {

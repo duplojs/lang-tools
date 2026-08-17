@@ -1,0 +1,5 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`arrayStructureTransformer > propagates an unsupported element 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
+
+exports[`arrayStructureTransformer > renders an array structure 1`] = `"export type Value = readonly string[];"`;

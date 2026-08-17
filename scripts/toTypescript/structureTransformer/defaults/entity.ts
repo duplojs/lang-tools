@@ -5,10 +5,7 @@ import { Typescript } from "@scripts/typescript";
 import { createStructureTransformer } from "../create";
 
 export const entityStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	) => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DModeling.entityStructureKind,
 	),
 	(

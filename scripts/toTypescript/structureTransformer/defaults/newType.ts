@@ -19,10 +19,7 @@ function createConstraintsTypeNode(
 }
 
 export const newTypeStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	) => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DModeling.newTypeStructureKind,
 	),
 	(

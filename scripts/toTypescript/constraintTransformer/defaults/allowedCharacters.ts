@@ -3,10 +3,7 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const allowedCharactersConstraintTransformer = createConstraintTransformer(
-	(
-		constraint,
-	) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.allowedCharactersConstraintKind,
 	),
 	(

@@ -4,10 +4,7 @@ import { Typescript } from "@scripts/typescript";
 import { createStructureTransformer } from "../create";
 
 export const unionStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	): structure is DDataStructure.UnionStructure => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DDataStructure.unionStructureKind,
 	),
 	(

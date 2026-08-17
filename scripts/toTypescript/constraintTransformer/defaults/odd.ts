@@ -3,11 +3,16 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const oddConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.oddConstraintKind,
 	),
-	(_constraint, { success, addImport }) => {
+	(
+		_constraint,
+		{
+			success,
+			addImport,
+		},
+	) => {
 		addImport("@duplojs/lang/number", "DNumber", "namespace");
 
 		return success(

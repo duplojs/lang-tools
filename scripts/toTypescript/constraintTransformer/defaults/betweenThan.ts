@@ -3,11 +3,17 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const betweenThanConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.betweenThanConstraintKind,
 	),
-	(constraint, { success, buildError, addImport }) => {
+	(
+		constraint,
+		{
+			success,
+			buildError,
+			addImport,
+		},
+	) => {
 		const { greater, less } = constraint.definition;
 
 		if (

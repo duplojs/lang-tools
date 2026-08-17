@@ -3,11 +3,16 @@ import { Typescript } from "@scripts/typescript";
 import { createConstraintTransformer } from "../create";
 
 export const notEmptyConstraintTransformer = createConstraintTransformer(
-	(constraint) => DDataStructure.constraintIdentifier(
-		constraint,
+	DDataStructure.constraintIdentifier(
 		DDataStructure.notEmptyConstraintKind,
 	),
-	(_constraint, { success, addImport }) => {
+	(
+		_constraint,
+		{
+			success,
+			addImport,
+		},
+	) => {
 		addImport("@duplojs/lang/string", "DString", "namespace");
 
 		return success(

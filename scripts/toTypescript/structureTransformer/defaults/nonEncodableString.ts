@@ -3,10 +3,7 @@ import { Typescript } from "@scripts/typescript";
 import { createStructureTransformer } from "../create";
 
 export const nonEncodableStringStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	) => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DDataStructure.nonEncodableStringStructureKind,
 	),
 	(

@@ -1,0 +1,25 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toTypescript override > adds override metadata without mutating the source structure 1`] = `
+"import * as NamespaceValue from "namespace-package";
+
+import DefaultValue from "default-package";
+
+import { ExternalType } from "direct-package";
+
+export type Values = readonly ExternalValue[];
+
+export type ExternalValue = ExternalType;"
+`;
+
+exports[`toTypescript override > delegates to the standard transformer 1`] = `"export type Value = string;"`;
+
+exports[`toTypescript override > removes an override with null 1`] = `"export type Value = string;"`;
+
+exports[`toTypescript override > sets override metadata on the current structure 1`] = `
+"import { CurrentType } from "direct-package";
+
+export type CurrentValue = CurrentType;
+
+export type Value = CurrentValue;"
+`;

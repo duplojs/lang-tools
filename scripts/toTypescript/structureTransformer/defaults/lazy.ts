@@ -2,10 +2,7 @@ import * as DDataStructure from "@duplojs/lang/dataStructure";
 import { createStructureTransformer } from "../create";
 
 export const lazyStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	) => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DDataStructure.lazyStructureKind,
 	),
 	(

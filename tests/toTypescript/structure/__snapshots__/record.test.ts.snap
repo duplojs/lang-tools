@@ -1,0 +1,13 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`recordStructureTransformer > propagates an unsupported key 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
+
+exports[`recordStructureTransformer > propagates an unsupported value 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
+
+exports[`recordStructureTransformer > renders required and partial records 1`] = `
+[
+  "export type Value = Readonly<Record<"key", number>>;",
+  "export type Value = Partial<Readonly<Record<string, number>>>;",
+  "export type Value = Partial<Readonly<Record<"key", undefined | number>>>;",
+]
+`;

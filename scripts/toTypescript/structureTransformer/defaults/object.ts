@@ -6,10 +6,7 @@ import { createStructureTransformer } from "../create";
 const identifierRegex = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
 export const objectStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	) => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DDataStructure.objectStructureKind,
 	),
 	(

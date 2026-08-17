@@ -1,0 +1,23 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`toTypescript imports > clones, merges and deduplicates a prefilled import context 1`] = `
+"import * as SharedNamespace from "shared-package";
+
+import * as ExtraNamespace from "shared-package";
+
+import SharedDefault from "shared-package";
+
+import ExtraDefault from "shared-package";
+
+import { SharedType, ExtraType } from "shared-package";
+
+import * as SetNamespace from "set-package";
+
+import SetDefault from "set-package";
+
+import { SetType } from "set-package";
+
+import { RuntimeType } from "runtime-package";
+
+export type Value = RuntimeType;"
+`;

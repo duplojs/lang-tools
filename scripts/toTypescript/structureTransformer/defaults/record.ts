@@ -4,10 +4,7 @@ import { Typescript } from "@scripts/typescript";
 import { createStructureTransformer } from "../create";
 
 export const recordStructureTransformer = createStructureTransformer(
-	(
-		structure,
-	) => DDataStructure.structureIdentifier(
-		structure,
+	DDataStructure.structureIdentifier(
 		DDataStructure.recordStructureKind,
 	),
 	(
