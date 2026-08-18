@@ -125,7 +125,7 @@ export function getRecursiveDataStructure(
 			)
 			.when(
 				DDataStructure.structureKind.has,
-				() => () => void 0,
+				() => void 0,
 			)
 			.exhaustive();
 	})(structure);

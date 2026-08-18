@@ -4,7 +4,7 @@
     "paths": {
 	  "@scripts": ["./scripts/index.ts"],
       "@scripts/*": ["./scripts/*"],
-      "@test/*": ["./test/*"],
+      "@tests/*": ["./tests/*"],
     },
     "types": ["vitest/globals", "node"],
   },

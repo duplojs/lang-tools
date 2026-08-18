@@ -93,4 +93,22 @@ describe("toTypescript override", () => {
 			},
 		)).toMatchSnapshot();
 	});
+
+	it("does not create an alias when root identifier matches structure identifier", () => {
+		const structure = DDataStructure.string()
+			.setIdentifier("SameValue");
+
+		const rendered = DStoTS.render(
+			structure,
+			{
+				identifier: "SameValue",
+				structureTransformers: DStoTS.defaultStructureTransformers,
+				typeTransformers: DStoTS.defaultTypeTransformers,
+				constraintTransformers: DStoTS.defaultConstraintTransformers,
+			},
+		);
+
+		const exportLines = rendered.split("\n").filter((line) => line.startsWith("export type"));
+		expect(exportLines).toHaveLength(1);
+	});
 });
