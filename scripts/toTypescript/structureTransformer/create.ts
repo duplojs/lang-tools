@@ -18,14 +18,12 @@ export interface StructureTransformerParams {
 		structure: DDataStructure.Structure,
 	): MaybeStructureTransformerEither;
 
-	includesUndefined(structure: DDataStructure.Structure): boolean;
+	success(result: Typescript.TypeNode): TransformerSuccessEither;
 
 	transformConstraint(
 		constraint: DDataStructure.Constraint,
 		structureTypeNode: Typescript.TypeNode,
 	): MaybeStructureTransformerEither;
-
-	success(result: Typescript.TypeNode): TransformerSuccessEither;
 
 	buildError(): DataStructureErrorEither;
 

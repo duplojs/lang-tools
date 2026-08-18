@@ -26,8 +26,8 @@ export const newTypeStructureTransformer = createStructureTransformer(
 		structure,
 		{
 			transformer,
-			transformConstraint,
 			success,
+			transformConstraint,
 			addImport,
 		},
 	) => {

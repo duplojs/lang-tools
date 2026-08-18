@@ -2,6 +2,7 @@ import * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import { Typescript } from "@scripts/typescript";
 import { createStructureTransformer } from "../create";
+import { contextDeclarationIncludesUndefined, includesUndefinedTypeNode } from "@scripts/toTypescript/includesUndefinedTypeNode";
 
 const identifierRegex = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 
@@ -13,8 +14,8 @@ export const objectStructureTransformer = createStructureTransformer(
 		structure,
 		{
 			transformer,
-			includesUndefined,
 			success,
+			context,
 		},
 	) => {
 		const typeElements: Typescript.TypeElement[] = [];
@@ -30,14 +31,22 @@ export const objectStructureTransformer = createStructureTransformer(
 				? Typescript.factory.createIdentifier(entry.key)
 				: Typescript.factory.createStringLiteral(entry.key);
 
+			const valueTypeNode = DEither.unwrapRight(valueResult);
+
+			const contextDeclaration = context.get(entry.value);
+
+			const includeUndefined = Typescript.isTypeReferenceNode(valueTypeNode) && contextDeclaration
+				? contextDeclarationIncludesUndefined(contextDeclaration)
+				: includesUndefinedTypeNode(valueTypeNode);
+
 			typeElements.push(
 				Typescript.factory.createPropertySignature(
 					[Typescript.factory.createModifier(Typescript.SyntaxKind.ReadonlyKeyword)],
 					propertyName,
-					includesUndefined(entry.value)
+					includeUndefined
 						? Typescript.factory.createToken(Typescript.SyntaxKind.QuestionToken)
 						: undefined,
-					DEither.unwrapRight(valueResult),
+					valueTypeNode,
 				),
 			);
 		}

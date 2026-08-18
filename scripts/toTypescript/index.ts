@@ -1,4 +1,3 @@
-export * from "./analysis";
 export * from "./constraintTransformer";
 export * from "./buildContext";
 export type * from "./context";
@@ -13,3 +12,4 @@ export type * from "./result";
 export * from "./structureTransformer";
 export * from "./transformer";
 export * from "./typeTransformer";
+export * from "./includesUndefinedTypeNode";

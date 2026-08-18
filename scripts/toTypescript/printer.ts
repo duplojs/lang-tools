@@ -15,7 +15,6 @@ export function printer(params: BuiltContext): string {
 	return [
 		...createImportDeclaration(params.importContext),
 		...params.context.values(),
-		...(params.rootDeclaration ? [params.rootDeclaration] : []),
 	]
 		.map(
 			(node) => typescriptPrinter.printNode(

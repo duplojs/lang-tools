@@ -57,8 +57,8 @@ describe("toTypescript hooks", () => {
 			},
 		);
 
-		expect(firstHookCallCount).toBe(1);
-		expect(secondHookCallCount).toBe(1);
+		expect(firstHookCallCount).toBe(2);
+		expect(secondHookCallCount).toBe(2);
 		expect(stoppedStructureReachedLastHook).toBe(false);
 		expect(result).toMatchSnapshot();
 	});

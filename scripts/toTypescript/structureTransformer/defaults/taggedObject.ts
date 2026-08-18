@@ -2,6 +2,7 @@ import * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import * as DModeling from "@duplojs/lang/modeling";
 import { Typescript } from "@scripts/typescript";
+import { createIdentifier } from "../../createIdentifier";
 import { createStructureTransformer } from "../create";
 
 export const taggedObjectStructureTransformer = createStructureTransformer(
@@ -18,10 +19,17 @@ export const taggedObjectStructureTransformer = createStructureTransformer(
 			addImport,
 		},
 	) => {
-		const placeholderDeclaration = context.get(structure);
+		let placeholderDeclaration = context.get(structure);
 
 		if (placeholderDeclaration === undefined) {
-			return buildError();
+			placeholderDeclaration = Typescript.factory.createInterfaceDeclaration(
+				[Typescript.factory.createModifier(Typescript.SyntaxKind.ExportKeyword)],
+				Typescript.factory.createIdentifier(createIdentifier(structure.name)),
+				undefined,
+				[],
+				[],
+			);
+			context.set(structure, placeholderDeclaration);
 		}
 
 		const shape: DDataStructure.ShapeObjectStructure = {};

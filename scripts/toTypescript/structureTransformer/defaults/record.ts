@@ -2,6 +2,7 @@ import * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import { Typescript } from "@scripts/typescript";
 import { createStructureTransformer } from "../create";
+import { includesUndefinedTypeNode } from "@scripts/toTypescript";
 
 export const recordStructureTransformer = createStructureTransformer(
 	DDataStructure.structureIdentifier(
@@ -11,7 +12,6 @@ export const recordStructureTransformer = createStructureTransformer(
 		structure,
 		{
 			transformer,
-			includesUndefined,
 			success,
 		},
 	) => {
@@ -27,6 +27,8 @@ export const recordStructureTransformer = createStructureTransformer(
 			return valueResult;
 		}
 
+		const valueTypeNode = DEither.unwrapRight(valueResult);
+
 		const recordTypeNode = Typescript.factory.createTypeReferenceNode(
 			"Readonly",
 			[
@@ -34,7 +36,7 @@ export const recordStructureTransformer = createStructureTransformer(
 					"Record",
 					[
 						DEither.unwrapRight(keyResult),
-						DEither.unwrapRight(valueResult),
+						valueTypeNode,
 					],
 				),
 			],
@@ -42,7 +44,7 @@ export const recordStructureTransformer = createStructureTransformer(
 
 		return success(
 			structure.definition.requiredKeys === null
-			|| includesUndefined(structure.definition.value)
+			|| includesUndefinedTypeNode(valueTypeNode)
 				? Typescript.factory.createTypeReferenceNode(
 					"Partial",
 					[recordTypeNode],

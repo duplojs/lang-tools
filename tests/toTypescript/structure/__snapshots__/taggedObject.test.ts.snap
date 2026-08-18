@@ -2,8 +2,6 @@
 
 exports[`taggedObjectStructureTransformer > propagates an unsupported property 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
 
-exports[`taggedObjectStructureTransformer > rejects a missing declaration placeholder 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
-
 exports[`taggedObjectStructureTransformer > rejects a transformed inner structure that is not an object type 1`] = `[Error: Error during the render of a data structure as a TypeScript type.]`;
 
 exports[`taggedObjectStructureTransformer > renders a tagged object as an interface 1`] = `

@@ -1,215 +1,243 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
+import * as DArray from "@duplojs/lang/array";
+import * as DCommon from "@duplojs/lang/common";
+import * as DObject from "@duplojs/lang/object";
 import * as DEither from "@duplojs/lang/either";
 import { Typescript } from "@scripts/typescript";
-import type { StructureAnalysis } from "./analysis";
-import { constraintTransformer, type ConstraintTransformer } from "./constraintTransformer";
+import { constraintTransformer, ConstraintTransformerParams, type MaybeConstraintTransformerEither, type ConstraintTransformer, type ConstraintTransformerSuccessEither } from "./constraintTransformer";
 import type { MapContext } from "./context";
-import { createTypeAliasDeclaration } from "./createTypeAliasDeclaration";
 import { createAddImport, type MapImportContext } from "./importContext";
 import { applyMapImportContextEntries } from "./override";
 import type { TransformerEither } from "./result";
-import { structureTransformer, type StructureTransformer, type StructureTransformerParams } from "./structureTransformer";
+import { structureTransformer, type MaybeStructureTransformerEither, type StructureTransformer, type StructureTransformerParams } from "./structureTransformer";
 import { typeTransformer, type TypeTransformer, type TypeTransformerParams } from "./typeTransformer";
+import type { TransformerHook } from "./hook";
+import { createIdentifier } from "./createIdentifier";
 
 export interface TransformerFunctionParams {
 	readonly identifier?: string;
-	readonly analysis: StructureAnalysis;
 	readonly structureTransformers: readonly StructureTransformer[];
 	readonly typeTransformers: readonly TypeTransformer[];
 	readonly constraintTransformers: readonly ConstraintTransformer[];
 	readonly context: MapContext;
 	readonly importContext: MapImportContext;
+	readonly hooks: readonly TransformerHook[];
+	readonly recursiveDataStructures: readonly DDataStructure.Structure[];
 }
 
 export function transformer(
 	structure: DDataStructure.Structure,
 	params: TransformerFunctionParams,
 ): TransformerEither {
-	const activeOverrideStructures = new WeakSet<DDataStructure.Structure>();
-	const transform = (
-		inputStructure: DDataStructure.Structure,
-		requestedIdentifier?: string,
-	): TransformerEither => {
-		const currentStructure = params.analysis.analyze(inputStructure);
-		const currentDeclaration = params.context.get(currentStructure);
-		const isTypeStructure = DDataStructure.structureIdentifier(
-			currentStructure,
-			DDataStructure.typeStructureKind,
+	const currentDataStructure = DArray.reduce(
+		params.hooks,
+		DArray.reduceFrom< DDataStructure.Structure>(structure),
+		({ element: hook, lastValue, next, exit }) => {
+			const result = hook({
+				structure: lastValue,
+				context: params.context,
+				importContext: params.importContext,
+				output: (action, structure) => ({
+					structure,
+					action,
+				}),
+			});
+
+			if (result.action === "stop") {
+				return exit(result.structure);
+			} else {
+				return next(result.structure);
+			}
+		},
+	);
+
+	const currentDeclaration = params.context.get(currentDataStructure);
+
+	if (currentDeclaration) {
+		return DEither.right(
+			"buildSuccess",
+			Typescript.factory.createTypeReferenceNode(
+				currentDeclaration.name,
+			),
+		);
+	}
+
+	const currentIdentifier = DCommon.justExec(() => {
+		if (
+			!DArray.includes(params.recursiveDataStructures, currentDataStructure)
+			&& !currentDataStructure.definition.identifier
+		) {
+			return undefined;
+		}
+
+		const identifier = currentDataStructure.definition.identifier !== undefined
+			? createIdentifier(currentDataStructure.definition.identifier)
+			: `RecursiveType${params.context.size}`;
+
+		params.context.set(
+			currentDataStructure,
+			Typescript.factory.createTypeAliasDeclaration(
+				[Typescript.factory.createToken(Typescript.SyntaxKind.ExportKeyword)],
+				Typescript.factory.createIdentifier(identifier),
+				undefined,
+				Typescript.factory.createTypeReferenceNode(
+					identifier,
+				),
+			),
 		);
 
-		if (currentDeclaration) {
-			return DEither.right(
-				"buildSuccess",
-				Typescript.factory.createTypeReferenceNode(currentDeclaration.name),
+		return identifier;
+	});
+
+	const structureTransformerParams: StructureTransformerParams = {
+		success(result) {
+			return DEither.right("buildSuccess", result);
+		},
+		transformer(structure) {
+			return transformer(
+				structure,
+				params,
 			);
-		}
+		},
+		transformConstraint: (constraint, structureTypeNode) => constraintTransformer(
+			constraint,
+			{
+				transformers: params.constraintTransformers,
+				structure: currentDataStructure,
+				structureTypeNode,
+				importContext: params.importContext,
+			},
+		),
+		context: params.context,
+		buildError() {
+			return DEither.left("buildDataStructureError");
+		},
+		importContext: params.importContext,
+		addImport: createAddImport(params.importContext),
+	};
 
-		const explicitIdentifier = params.analysis.getIdentifier(currentStructure);
-		const needsDeclaration = explicitIdentifier !== undefined
-			|| (
-				!isTypeStructure
-				&& (
-					requestedIdentifier !== undefined
-					|| params.analysis.recursiveStructures.has(currentStructure)
-				)
-			);
-		const currentIdentifier = needsDeclaration
-			? explicitIdentifier
-				?? requestedIdentifier
-				?? params.analysis.getRecursiveIdentifier(currentStructure)
-			: undefined;
-		const placeholderDeclaration = currentIdentifier === undefined
-			? undefined
-			: createTypeAliasDeclaration(
-				currentIdentifier,
-				Typescript.factory.createTypeReferenceNode(currentIdentifier),
-			);
+	const typeTransformerParams: TypeTransformerParams = {
+		importContext: params.importContext,
+		success: structureTransformerParams.success,
+		buildError: structureTransformerParams.buildError,
+		addImport: structureTransformerParams.addImport,
+	};
 
-		if (placeholderDeclaration) {
-			params.context.set(currentStructure, placeholderDeclaration);
-		}
+	if (currentDataStructure.definition.mapImportContextEntries) {
+		applyMapImportContextEntries(
+			structureTransformerParams.addImport,
+			currentDataStructure.definition.mapImportContextEntries,
+		);
+	}
 
-		const standardStructureTransformerParams: StructureTransformerParams = {
-			context: params.context,
-			importContext: params.importContext,
-			transformer: (nextStructure) => transform(nextStructure),
-			includesUndefined: params.analysis.includesUndefined,
-			transformConstraint: (constraint, structureTypeNode) => constraintTransformer(
-				constraint,
-				{
-					transformers: params.constraintTransformers,
-					structure: currentStructure,
-					structureTypeNode,
-					importContext: params.importContext,
-				},
-			),
-			success: (typeNode) => DEither.right("buildSuccess", typeNode),
-			buildError: () => DEither.left("buildDataStructureError", currentStructure),
-			addImport: createAddImport(params.importContext),
-		};
-		const standardTypeTransformerParams: TypeTransformerParams = {
-			importContext: params.importContext,
-			success: standardStructureTransformerParams.success,
-			buildError: standardStructureTransformerParams.buildError,
-			addImport: standardStructureTransformerParams.addImport,
-		};
-
-		if (currentStructure.definition.mapImportContextEntries) {
-			applyMapImportContextEntries(
-				standardStructureTransformerParams.addImport,
-				currentStructure.definition.mapImportContextEntries,
-			);
-		}
-
-		const defaultTransformer = () => isTypeStructure
-			? typeTransformer(
-				currentStructure,
-				{
-					transformers: params.typeTransformers,
-					transformerParams: standardTypeTransformerParams,
-				},
-			)
-			: structureTransformer(
-				currentStructure,
-				{
-					transformers: params.structureTransformers,
-					transformerParams: standardStructureTransformerParams,
-				},
-			);
-		const runTransformer = (): TransformerEither => {
-			const overrideTransformer = activeOverrideStructures.has(currentStructure)
-				? undefined
-				: currentStructure.definition.overrideTypescriptTransformer;
-
-			if (overrideTransformer === undefined) {
-				return defaultTransformer();
-			}
-
-			activeOverrideStructures.add(currentStructure);
-
-			try {
-				return overrideTransformer(
-					currentStructure,
-					standardStructureTransformerParams,
+	const result = DCommon.pipe(
+		currentDataStructure,
+		(dataStructure) => {
+			if (dataStructure.definition.overrideTypescriptTransformer) {
+				return dataStructure.definition.overrideTypescriptTransformer(
+					currentDataStructure.addOverrideTypescriptTransformer(null),
+					structureTransformerParams,
 				);
-			} finally {
-				activeOverrideStructures.delete(currentStructure);
+			} else if (
+				DDataStructure.structureIdentifier(
+					currentDataStructure,
+					DDataStructure.typeStructureKind,
+				)
+			) {
+				return typeTransformer(
+					currentDataStructure,
+					{
+						transformers: params.typeTransformers,
+						transformerParams: typeTransformerParams,
+					},
+				);
+			} else {
+				return structureTransformer(
+					currentDataStructure,
+					{
+						transformers: params.structureTransformers,
+						transformerParams: structureTransformerParams,
+					},
+				);
 			}
-		};
-		let result = runTransformer();
+		},
+		DCommon.when(
+			DEither.hasInformation("buildSuccess"),
+			(structureTypeNode) => {
+				if (!DArray.minElements(currentDataStructure.definition.constraints, 1)) {
+					return structureTypeNode;
+				}
 
-		if (!DEither.isLeft(result)) {
-			const structureTypeNode = DEither.unwrapRight(result);
-			const constraintTypeNodes: Typescript.TypeNode[] = [];
+				const currentStructureTypeNode = DEither.unwrapRight(structureTypeNode);
 
-			for (const constraint of currentStructure.definition.constraints) {
-				const constraintResult = standardStructureTransformerParams.transformConstraint(
-					constraint,
-					structureTypeNode,
+				const constraintResult = DArray.reduce(
+					currentDataStructure.definition.constraints,
+					DArray.reduceFrom<ConstraintTransformerSuccessEither[]>([]),
+					({
+						element: constraint,
+						lastValue,
+						nextPush,
+						exit,
+					}) => {
+						const result = constraintTransformer(
+							constraint,
+							{
+								transformers: params.constraintTransformers,
+								structure: currentDataStructure,
+								structureTypeNode: currentStructureTypeNode,
+								importContext: params.importContext,
+							},
+						);
+
+						if (DEither.isLeft(result)) {
+							return exit(result);
+						}
+
+						return nextPush(lastValue, result);
+					},
 				);
 
 				if (DEither.isLeft(constraintResult)) {
-					result = constraintResult;
-					break;
+					return constraintResult;
 				}
 
-				constraintTypeNodes.push(DEither.unwrapRight(constraintResult));
-			}
+				const result = DArray.map(constraintResult, DEither.unwrapRight);
 
-			if (
-				!DEither.isLeft(result)
-				&& constraintTypeNodes.length !== 0
-			) {
-				result = DEither.right(
+				return DEither.right(
 					"buildSuccess",
 					Typescript.factory.createIntersectionTypeNode([
-						structureTypeNode,
-						...constraintTypeNodes,
+						currentStructureTypeNode,
+						...result,
 					]),
 				);
-			}
-		}
-
-		if (DEither.isLeft(result)) {
-			if (
-				placeholderDeclaration
-				&& params.context.get(currentStructure) === placeholderDeclaration
-			) {
-				params.context.delete(currentStructure);
-			}
-
-			return result;
-		}
-
-		if (currentIdentifier) {
-			const contextDeclaration = params.context.get(currentStructure);
-
-			if (
-				contextDeclaration !== undefined
-				&& contextDeclaration !== placeholderDeclaration
-			) {
-				return result;
-			}
-
-			params.context.set(
-				currentStructure,
-				createTypeAliasDeclaration(
-					currentIdentifier,
-					DEither.unwrapRight(result),
-				),
-			);
-
-			return DEither.right(
-				"buildSuccess",
-				Typescript.factory.createTypeReferenceNode(currentIdentifier),
-			);
-		}
-
-		return result;
-	};
-
-	return transform(
-		structure,
-		params.identifier,
+			},
+		),
 	);
+
+	if (DEither.isLeft(result)) {
+		return result;
+	}
+
+	if (currentIdentifier) {
+		params.context.delete(currentDataStructure);
+
+		params.context.set(
+			currentDataStructure,
+			Typescript.factory.createTypeAliasDeclaration(
+				[Typescript.factory.createToken(Typescript.SyntaxKind.ExportKeyword)],
+				Typescript.factory.createIdentifier(currentIdentifier),
+				undefined,
+				DEither.unwrapRight(result),
+			),
+		);
+
+		return DEither.right(
+			"buildSuccess",
+			Typescript.factory.createTypeReferenceNode(
+				currentIdentifier,
+			),
+		);
+	}
+
+	return result;
 }

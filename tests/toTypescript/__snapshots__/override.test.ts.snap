@@ -7,9 +7,9 @@ import DefaultValue from "default-package";
 
 import { ExternalType } from "direct-package";
 
-export type Values = readonly ExternalValue[];
+export type ExternalValue = ExternalType;
 
-export type ExternalValue = ExternalType;"
+export type Values = readonly ExternalValue[];"
 `;
 
 exports[`toTypescript override > delegates to the standard transformer 1`] = `"export type Value = string;"`;
