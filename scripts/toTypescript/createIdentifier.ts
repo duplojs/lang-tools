@@ -2,17 +2,22 @@ const invalidIdentifierPartRegExp = /[^A-Za-z0-9_$]+(?<nextCharacter>.)?/g;
 const validIdentifierStartRegExp = /^[A-Za-z_$]/;
 
 export function createIdentifier(identifier: string): string {
-	const camelCasedIdentifier = identifier
+	let result = identifier
 		.trim()
 		.replace(
 			invalidIdentifierPartRegExp,
-			(__, nextCharacter: string | undefined) => nextCharacter?.toUpperCase() ?? "",
+			(__, character: string | undefined) => character?.toUpperCase() ?? "",
 		);
-	const capitalizedIdentifier = camelCasedIdentifier.length === 0
-		? "Type"
-		: `${camelCasedIdentifier[0]!.toUpperCase()}${camelCasedIdentifier.slice(1)}`;
 
-	return validIdentifierStartRegExp.test(capitalizedIdentifier)
-		? capitalizedIdentifier
-		: `_${capitalizedIdentifier}`;
+	if (!result) {
+		return "Type";
+	}
+
+	result = result[0]!.toUpperCase() + result.slice(1);
+
+	if (!validIdentifierStartRegExp.test(result)) {
+		result = `_${result}`;
+	}
+
+	return result;
 }
