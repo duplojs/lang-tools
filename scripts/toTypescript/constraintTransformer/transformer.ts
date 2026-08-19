@@ -2,7 +2,8 @@ import type * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import type { Typescript } from "@scripts/typescript";
 import { createAddImport, type MapImportContext } from "../importContext";
-import type { ConstraintTransformer, ConstraintTransformerParams, MaybeConstraintTransformerEither } from "./create";
+import type { ConstraintTransformer, ConstraintTransformerParams } from "./create";
+import type { ConstraintTransformerEither } from "../result";
 
 export interface ConstraintTransformerFunctionParams {
 	readonly transformers: readonly ConstraintTransformer[];
@@ -14,7 +15,7 @@ export interface ConstraintTransformerFunctionParams {
 export function constraintTransformer(
 	constraint: DDataStructure.Constraint,
 	params: ConstraintTransformerFunctionParams,
-): MaybeConstraintTransformerEither {
+): ConstraintTransformerEither {
 	const transformerParams: ConstraintTransformerParams = {
 		structure: params.structure,
 		structureTypeNode: params.structureTypeNode,

@@ -27,9 +27,14 @@ export type ConstraintErrorEither = DEither.Left<
 	DDataStructure.Constraint
 >;
 
-export type TransformerEither =
+export type ConstraintTransformerEither = (
+	| TransformerSuccessEither
+	| ConstraintNotSupportedEither
+	| ConstraintErrorEither
+);
+export type TransformerEither = (
 	| TransformerSuccessEither
 	| DataStructureNotSupportedEither
 	| DataStructureErrorEither
-	| ConstraintNotSupportedEither
-	| ConstraintErrorEither;
+	| ConstraintTransformerEither
+);

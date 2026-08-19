@@ -2,23 +2,14 @@ import type * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import type { Typescript } from "@scripts/typescript";
 import type { ImportKind, MapImportContext } from "../importContext";
-import type { ConstraintErrorEither, ConstraintNotSupportedEither, TransformerSuccessEither } from "../result";
-
-export type { ConstraintErrorEither, ConstraintNotSupportedEither } from "../result";
-
-export type ConstraintTransformerSuccessEither = TransformerSuccessEither;
-
-export type MaybeConstraintTransformerEither =
-	| ConstraintTransformerSuccessEither
-	| ConstraintNotSupportedEither
-	| ConstraintErrorEither;
+import type { ConstraintErrorEither, ConstraintTransformerEither, TransformerSuccessEither } from "../result";
 
 export interface ConstraintTransformerParams {
 	readonly structure: DDataStructure.Structure;
 	readonly structureTypeNode: Typescript.TypeNode;
 	readonly importContext: MapImportContext;
 
-	success(result: Typescript.TypeNode): ConstraintTransformerSuccessEither;
+	success(result: Typescript.TypeNode): TransformerSuccessEither;
 
 	buildError(): ConstraintErrorEither;
 
@@ -30,12 +21,12 @@ export type ConstraintTransformerBuildFunction<
 > = (
 	constraint: GenericConstraint,
 	params: ConstraintTransformerParams,
-) => MaybeConstraintTransformerEither;
+) => ConstraintTransformerEither;
 
 export type ConstraintTransformer = (
 	constraint: DDataStructure.Constraint,
 	params: ConstraintTransformerParams,
-) => MaybeConstraintTransformerEither;
+) => ConstraintTransformerEither;
 
 export function createConstraintTransformer<
 	GenericConstraint extends DDataStructure.Constraint,

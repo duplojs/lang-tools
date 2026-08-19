@@ -1,15 +1,14 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DArray from "@duplojs/lang/array";
 import * as DCommon from "@duplojs/lang/common";
-import * as DObject from "@duplojs/lang/object";
 import * as DEither from "@duplojs/lang/either";
 import { Typescript } from "@scripts/typescript";
-import { constraintTransformer, ConstraintTransformerParams, type MaybeConstraintTransformerEither, type ConstraintTransformer, type ConstraintTransformerSuccessEither } from "./constraintTransformer";
+import { constraintTransformer, type ConstraintTransformer } from "./constraintTransformer";
 import type { MapContext } from "./context";
 import { createAddImport, type MapImportContext } from "./importContext";
 import { applyMapImportContextEntries } from "./override";
-import type { TransformerEither } from "./result";
-import { structureTransformer, type MaybeStructureTransformerEither, type StructureTransformer, type StructureTransformerParams } from "./structureTransformer";
+import type { TransformerEither, TransformerSuccessEither } from "./result";
+import { structureTransformer, type StructureTransformer, type StructureTransformerParams } from "./structureTransformer";
 import { typeTransformer, type TypeTransformer, type TypeTransformerParams } from "./typeTransformer";
 import type { TransformerHook } from "./hook";
 import { createIdentifier } from "./createIdentifier";
@@ -172,7 +171,7 @@ export function transformer(
 
 				const constraintResult = DArray.reduce(
 					currentDataStructure.definition.constraints,
-					DArray.reduceFrom<ConstraintTransformerSuccessEither[]>([]),
+					DArray.reduceFrom<TransformerSuccessEither[]>([]),
 					({
 						element: constraint,
 						lastValue,

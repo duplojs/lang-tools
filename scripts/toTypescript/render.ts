@@ -2,14 +2,14 @@ import type * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
 import * as DKind from "@duplojs/lang/kind";
 import { buildContext, type BuildContextParams } from "./buildContext";
-import { createToTypescriptKind } from "./kind";
+import { createKind } from "./kind";
 import { printer } from "./printer";
 import type { ConstraintErrorEither, ConstraintNotSupportedEither, DataStructureErrorEither, DataStructureNotSupportedEither } from "./result";
 
 export interface RenderParams extends BuildContextParams {}
 
 export class DataStructureToTypescriptRenderError extends DKind.parentClass(
-	createToTypescriptKind("data-structure-to-typescript-render-error"),
+	createKind("data-structure-to-typescript-render-error"),
 	Error,
 ) {
 	public constructor(

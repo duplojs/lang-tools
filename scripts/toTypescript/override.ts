@@ -8,38 +8,41 @@ export type MapImportContextEntry = readonly [
 	value: MapImportContextValue,
 ];
 
-export type TypescriptTransformerOverrideBuildFunction<
-	GenericStructure extends DDataStructure.Structure = DDataStructure.Structure,
-> = StructureTransformerBuildFunction<GenericStructure>;
-
 export type TypescriptTransformerOverride<
 	GenericStructure extends DDataStructure.Structure = DDataStructure.Structure,
-> = Typescript.TypeNode | TypescriptTransformerOverrideBuildFunction<GenericStructure>;
+> = Typescript.TypeNode | StructureTransformerBuildFunction<GenericStructure>;
 
 declare module "@duplojs/lang/dataStructure" {
 	interface StructureDefinition {
 		identifier?: string;
-		overrideTypescriptTransformer?: TypescriptTransformerOverrideBuildFunction;
+		overrideTypescriptTransformer?: StructureTransformerBuildFunction;
 		mapImportContextEntries?: readonly MapImportContextEntry[];
 	}
 
 	interface Structure {
-		setIdentifier(identifier: string): this;
 
+		/**
+		 * @deprecated this method mutated the DataStructure by adding an identifier
+		 */
+		setIdentifier(identifier: string): this;
 		addIdentifier(identifier: string): this;
 
+		/**
+		 * @deprecated this method mutated the DataStructure by adding an override transformer
+		 */
 		setOverrideTypescriptTransformer(
 			overrideTransformer: TypescriptTransformerOverride<this> | null,
 		): this;
-
 		addOverrideTypescriptTransformer(
 			overrideTransformer: TypescriptTransformerOverride<this> | null,
 		): this;
 
+		/**
+		 * @deprecated this method mutated the DataStructure by adding an map import context
+		 */
 		setMapImportContextEntries(
 			...entries: readonly MapImportContextEntry[]
 		): this;
-
 		addMapImportContextEntries(
 			...entries: readonly MapImportContextEntry[]
 		): this;

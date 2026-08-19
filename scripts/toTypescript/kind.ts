@@ -1,5 +1,5 @@
 import * as DKind from "@duplojs/lang/kind";
 
-export const createToTypescriptKind = DKind.createNamespace(
+export const createKind = DKind.createNamespace(
 	"DuplojsLangToolsToTypescript",
 );

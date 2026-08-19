@@ -1,10 +1,10 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import { Typescript } from "@scripts/typescript";
-import { createTypeTransformer, typeStructureIdentifier } from "../create";
+import { createTypeTransformer } from "../create";
+import { typeStructureIdentifier } from "@scripts/utils";
 
 export const numberTypeTransformer = createTypeTransformer(
-	(structure) => typeStructureIdentifier(
-		structure,
+	typeStructureIdentifier(
 		DDataStructure.numberTypeKind,
 	),
 	(

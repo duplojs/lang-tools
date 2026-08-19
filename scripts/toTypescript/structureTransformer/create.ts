@@ -3,12 +3,7 @@ import * as DEither from "@duplojs/lang/either";
 import type { Typescript } from "@scripts/typescript";
 import type { MapContext } from "../context";
 import type { ImportKind, MapImportContext } from "../importContext";
-import type { DataStructureErrorEither, TransformerEither, TransformerSuccessEither } from "../result";
-
-export type { DataStructureErrorEither, DataStructureNotSupportedEither, TransformerSuccessEither } from "../result";
-export type { ImportKind, MapImportContext, MapImportContextValue } from "../importContext";
-
-export type MaybeStructureTransformerEither = TransformerEither;
+import type { ConstraintTransformerEither, DataStructureErrorEither, TransformerEither, TransformerSuccessEither } from "../result";
 
 export interface StructureTransformerParams {
 	readonly context: MapContext;
@@ -16,14 +11,14 @@ export interface StructureTransformerParams {
 
 	transformer(
 		structure: DDataStructure.Structure,
-	): MaybeStructureTransformerEither;
+	): TransformerEither;
 
 	success(result: Typescript.TypeNode): TransformerSuccessEither;
 
 	transformConstraint(
 		constraint: DDataStructure.Constraint,
 		structureTypeNode: Typescript.TypeNode,
-	): MaybeStructureTransformerEither;
+	): ConstraintTransformerEither;
 
 	buildError(): DataStructureErrorEither;
 
@@ -35,12 +30,12 @@ export type StructureTransformerBuildFunction<
 > = (
 	structure: GenericStructure,
 	params: StructureTransformerParams,
-) => MaybeStructureTransformerEither;
+) => TransformerEither;
 
 export type StructureTransformer = (
 	structure: DDataStructure.Structure,
 	params: StructureTransformerParams,
-) => MaybeStructureTransformerEither;
+) => TransformerEither;
 
 export function createStructureTransformer<
 	GenericStructure extends DDataStructure.Structure,

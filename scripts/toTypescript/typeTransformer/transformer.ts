@@ -1,6 +1,7 @@
 import type * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
-import type { MaybeTypeTransformerEither, TypeTransformer, TypeTransformerParams } from "./create";
+import type { TypeTransformer, TypeTransformerParams } from "./create";
+import type { TransformerEither } from "../result";
 
 export interface TypeTransformerFunctionParams {
 	readonly transformers: readonly TypeTransformer[];
@@ -8,12 +9,12 @@ export interface TypeTransformerFunctionParams {
 }
 
 export function typeTransformer(
-	structure: DDataStructure.TypeStructure,
+	typeStructure: DDataStructure.TypeStructure,
 	params: TypeTransformerFunctionParams,
-): MaybeTypeTransformerEither {
+): TransformerEither {
 	for (const currentTransformer of params.transformers) {
 		const result = currentTransformer(
-			structure,
+			typeStructure,
 			params.transformerParams,
 		);
 
@@ -27,5 +28,5 @@ export function typeTransformer(
 		return result;
 	}
 
-	return DEither.left("dataStructureNotSupport", structure);
+	return DEither.left("dataStructureNotSupport", typeStructure);
 }

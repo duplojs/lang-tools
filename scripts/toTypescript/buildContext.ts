@@ -1,10 +1,10 @@
 import * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
-import type { ConstraintErrorEither, ConstraintNotSupportedEither, ConstraintTransformer } from "./constraintTransformer";
+import type { ConstraintTransformer } from "./constraintTransformer";
 import type { MapContext } from "./context";
 import type { TransformerHook } from "./hook";
 import { createImportContext, type MapImportContext } from "./importContext";
-import type { DataStructureErrorEither, DataStructureNotSupportedEither } from "./result";
+import type { ConstraintErrorEither, ConstraintNotSupportedEither, DataStructureErrorEither, DataStructureNotSupportedEither } from "./result";
 import type { StructureTransformer } from "./structureTransformer";
 import { transformer } from "./transformer";
 import type { TypeTransformer } from "./typeTransformer";

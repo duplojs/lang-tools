@@ -1,40 +1,8 @@
-import * as DDataStructure from "@duplojs/lang/dataStructure";
+import type * as DDataStructure from "@duplojs/lang/dataStructure";
 import * as DEither from "@duplojs/lang/either";
-import type * as DKind from "@duplojs/lang/kind";
 import type { Typescript } from "@scripts/typescript";
 import type { ImportKind, MapImportContext } from "../importContext";
 import type { DataStructureErrorEither, TransformerEither, TransformerSuccessEither } from "../result";
-
-export type { DataStructureErrorEither, DataStructureNotSupportedEither, TransformerSuccessEither } from "../result";
-export type { ImportKind, MapImportContext, MapImportContextValue } from "../importContext";
-
-export type MaybeTypeTransformerEither = TransformerEither;
-
-export type TypeKindHandler = DDataStructure.Types extends infer InferredType
-	? InferredType extends DDataStructure.Type
-		? DKind.GetHandler<InferredType>
-		: never
-	: never;
-
-export type TypeFromKindHandler<
-	GenericTypeKind extends TypeKindHandler,
-> = Extract<
-	DDataStructure.Types,
-	DKind.Kind<GenericTypeKind>
->;
-
-export type IdentifiedTypeStructure<
-	GenericType extends DDataStructure.Type,
-> = (
-	& DDataStructure.TypeStructure<
-		DDataStructure.TypeValue<GenericType>
-	>
-	& {
-		readonly definition: DDataStructure.TypeStructure["definition"] & {
-			readonly type: GenericType;
-		};
-	}
-);
 
 export interface TypeTransformerParams {
 	readonly importContext: MapImportContext;
@@ -47,46 +15,32 @@ export interface TypeTransformerParams {
 }
 
 export type TypeTransformerBuildFunction<
-	GenericStructure extends DDataStructure.TypeStructure = DDataStructure.TypeStructure,
+	GenericTypeStructure extends DDataStructure.TypeStructure = DDataStructure.TypeStructure,
 > = (
-	structure: GenericStructure,
+	typeStructure: GenericTypeStructure,
 	params: TypeTransformerParams,
-) => MaybeTypeTransformerEither;
+) => TransformerEither;
 
 export type TypeTransformer = (
-	structure: DDataStructure.TypeStructure,
+	typeStructure: DDataStructure.TypeStructure,
 	params: TypeTransformerParams,
-) => MaybeTypeTransformerEither;
-
-export function typeStructureIdentifier<
-	GenericTypeKind extends TypeKindHandler,
->(
-	structure: DDataStructure.TypeStructure,
-	typeKind: GenericTypeKind,
-): structure is IdentifiedTypeStructure<
-	TypeFromKindHandler<GenericTypeKind>
-> {
-	return DDataStructure.typeIdentifier(
-		structure.definition.type,
-		typeKind,
-	);
-}
+) => TransformerEither;
 
 export function createTypeTransformer<
-	GenericStructure extends DDataStructure.TypeStructure,
+	GenericTypeStructure extends DDataStructure.TypeStructure,
 >(
 	support: (
-		structure: DDataStructure.TypeStructure,
-	) => structure is GenericStructure,
-	builder: TypeTransformerBuildFunction<GenericStructure>,
+		typeStructure: DDataStructure.TypeStructure,
+	) => typeStructure is GenericTypeStructure,
+	builder: TypeTransformerBuildFunction<GenericTypeStructure>,
 ): TypeTransformer {
 	return (
-		structure,
+		typeStructure,
 		params,
-	) => support(structure)
+	) => support(typeStructure)
 		? builder(
-			structure,
+			typeStructure,
 			params,
 		)
-		: DEither.left("dataStructureNotSupport", structure);
+		: DEither.left("dataStructureNotSupport", typeStructure);
 }
